@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: github-optimizer-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - PORT=5000
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: github-optimizer-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
